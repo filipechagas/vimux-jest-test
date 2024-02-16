@@ -1,8 +1,13 @@
 let g:JestCommand = "jest"
+let g:JestDebugCommand = "node --inspect-brk $(which jest) --runInBand"
 
 command! RunJest :call _run_jest("", g:JestCommand)
 command! RunJestOnBuffer :call RunJestOnBuffer(g:JestCommand)
 command! RunJestFocused :call RunJestFocused(g:JestCommand)
+
+command! DebugJest :call _run_jest("", g:JestDebugCommand)
+command! DebugJestOnBuffer :call RunJestOnBuffer(g:JestDebugCommand)
+command! DebugJestFocused :call RunJestFocused(g:JestDebugCommand)
 
 function! RunJestOnBuffer(command)
   call _run_jest(expand("%"), a:command)
@@ -21,6 +26,7 @@ endfunction
 function! _jest_test_search(fragment)
   let line_num = search(a:fragment, "bs")
   if line_num > 0
+    ''
     let tokens_split_on_parens  = split(getline(line_num), "(")
     if len(tokens_split_on_parens) > 1
       return split(tokens_split_on_parens[1], ",")[0]
