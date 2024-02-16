@@ -1,26 +1,26 @@
-command! RunJest :call _run_jest("")
-command! RunJestOnBuffer :call RunJestOnBuffer()
-command! RunJestFocused :call RunJestFocused()
+let g:JestCommand = "jest"
 
-function! RunJestOnBuffer()
-  call _run_jest(expand("%"))
+command! RunJest :call _run_jest("", g:JestCommand)
+command! RunJestOnBuffer :call RunJestOnBuffer(g:JestCommand)
+command! RunJestFocused :call RunJestFocused(g:JestCommand)
+
+function! RunJestOnBuffer(command)
+  call _run_jest(expand("%"), a:command)
 endfunction
 
-function! RunJestFocused()
-  let test_name = _jest_test_search('\<test(\|\<it(\|\<test.only(') "note the single quotes
-
+function! RunJestFocused(command)
+  let test_name = _jest_test_search('\<test(\|\<it(\|\<test.only(')
   if test_name == ""
     echoerr "Couldn't find test name to run focused test."
     return
   endif
 
-  call _run_jest(expand("%") . " -t " . test_name)
+  call _run_jest(expand("%") . " -t " . test_name, a:command)
 endfunction
 
 function! _jest_test_search(fragment)
   let line_num = search(a:fragment, "bs")
   if line_num > 0
-    ''
     let tokens_split_on_parens  = split(getline(line_num), "(")
     if len(tokens_split_on_parens) > 1
       return split(tokens_split_on_parens[1], ",")[0]
@@ -32,6 +32,6 @@ function! _jest_test_search(fragment)
   endif
 endfunction
 
-function! _run_jest(test)
-  call VimuxRunCommand("jest " . a:test)
+function! _run_jest(test, command)
+  call VimuxRunCommand(a:command . " " . a:test)
 endfunction
