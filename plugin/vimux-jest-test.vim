@@ -24,16 +24,25 @@ function! RunJestFocused(command)
 endfunction
 
 function! _jest_test_search(fragment)
+  " Save the entire state of the window, including cursor position
+  let save_view = winsaveview()
+
   let line_num = search(a:fragment, "bs")
   if line_num > 0
     ''
     let tokens_split_on_parens  = split(getline(line_num), "(")
     if len(tokens_split_on_parens) > 1
+      " Restore the window state before returning
+      call winrestview(save_view)
       return split(tokens_split_on_parens[1], ",")[0]
     endif
 
+    " Restore the window state before returning
+    call winrestview(save_view)
     return split(getline(line_num + 1), ",")[0]
   else
+    " Restore the window state before returning
+    call winrestview(save_view)
     return ""
   endif
 endfunction
